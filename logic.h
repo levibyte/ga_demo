@@ -51,6 +51,8 @@ class JManager {
 	void revert();
         int change();
 	
+        int get_fitness(const std::vector<std::vector<JInstance*> >& m);
+        
         std::pair<int,int> get_id_by_inst(JInstance* inst);
         std::vector<int> get_real_vect(const std::vector<JInstance*>& iv);
         void print_dbg();
@@ -82,6 +84,40 @@ class JManager {
 	JRenderer* m_renderer;
 };
 
+template<typename T>
+class JGeneticAlgoMyImpl: public JGeneticAlgoDefaultImpl<T> {
+
+public:
+      JGeneticAlgoMyImpl(JManager* m_logic):m_logic(m_logic) {}
+
+
+public:
+      int get_fitness(const T& f) {
+         m_logic->get_fitness(f);
+      }
+      
+      typedef std::vector<JInstance*> PCLM; 
+      typedef std::vector<PCLM> JGen;
+      
+      JGen merge(const JGen& g0,const JGen& g1) {
+          JGen z;
+          for(int i=0;i<g0.size();i++) z.push_back(merge_columns(g0[i],g1[i]));
+          return z; 
+      }
+
+      PCLM merge_columns(const PCLM& f, const PCLM& s) {
+          PCLM z;
+          std::cout << f.size() << std::endl;
+          for(int i=0;i<f.size()/2;i++) z.push_back(f[i]);
+          for(int i=0;i<s.size();i++) 
+          if ( std::find(z.begin(),z.end(),s[i]) == z.end() ) 
+          z.push_back(s[i]);
+          return z;
+      }
+      
+public:
+      JManager* m_logic;
+};
 
 
 

@@ -16,9 +16,29 @@
 #include <functional>
 
 	    
+	int JManager::get_fitness(const std::vector<std::vector<JInstance*> >& m) {
+            m_layers = m;
+            return calc_intersections();
+        }
+        
+        
+        
+        
         void JManager::action() {
-	    //JGeneticAlgo<std::vector<std::vector<JInstance*> >* > j;
-
+	    
+            typedef std::vector<std::vector<JInstance*> > Z;
+            JGeneticAlgoImpl<Z>* impl = new JGeneticAlgoMyImpl<Z>(this);
+            JGeneticAlgo<Z> j(impl);
+            
+            for(int i=0;i<10;i++) {
+                add_change();
+                impl->add_gen(m_layers);
+            }
+            
+            j.run();
+            
+            
+            /*
             calc_intersections();
             draw();
             
@@ -33,7 +53,7 @@
             calc_intersections();
             draw();
             //j.optimize();
-            
+            */
             
 	    /*SDL_RenderClear( m_renderer->get() );
 	    SDL_SetRenderDrawColor( m_renderer->get(), 0, 0, 0, 255);
@@ -49,9 +69,9 @@
 	    j.simulate();
 	    */
 	    
-	    //calc_intersections();
-	    //draw();
-	    //std::cout << "BEGIN: " << m_start_res << " CURRENT: " << m_last_res << std::endl;
+	    calc_intersections();
+	    draw();
+	    std::cout << "BEGIN: " << m_start_res << " CURRENT: " << m_last_res << std::endl;
 	    //m_start_res = m_last_res;
 	    //<< " BEST: " << m_last_fitness << std::endl;
             /**/
