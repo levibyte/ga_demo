@@ -32,7 +32,7 @@ class JManager {
 		    int m_v;
 	   };
     
-	JManager(JRenderer* r):m_renderer(r),m_layers_cnt(3),m_max_per_clm(6),m_conn_density(1),m_last_res(0) {
+	JManager(JRenderer* r):m_renderer(r),m_layers_cnt(13),m_max_per_clm(10),m_conn_density(1),m_last_res(0) {
 	  
 	  m_layers.resize(m_layers_cnt);
 	  srand(time(0));
@@ -52,6 +52,9 @@ class JManager {
         int change();
 	
         int get_fitness(const std::vector<std::vector<JInstance*> >& m);
+        void set_winner(const std::vector<std::vector<JInstance*> >& m);
+        std::vector<std::vector<JInstance*> > add_change(std::vector<std::vector<JInstance*> > m);
+        std::vector<std::vector<JInstance*> > get_new_state();
         
         std::pair<int,int> get_id_by_inst(JInstance* inst);
         std::vector<int> get_real_vect(const std::vector<JInstance*>& iv);
@@ -85,38 +88,58 @@ class JManager {
 };
 
 template<typename T>
-class JGeneticAlgoMyImpl: public JGeneticAlgoDefaultImpl<T> {
+class JGeneticAlgoMyImpl: public JGeneticAlgoDefaultImpl<T> 
+{
 
-public:
-      JGeneticAlgoMyImpl(JManager* m_logic):m_logic(m_logic) {}
+    typedef std::vector<JInstance*> PCLM; 
+    typedef std::vector<PCLM> JGen;
+
+    public:
+          JGeneticAlgoMyImpl(JManager* m_logic):m_logic(m_logic) {}
 
 
-public:
-      int get_fitness(const T& f) {
-         m_logic->get_fitness(f);
-      }
-      
-      typedef std::vector<JInstance*> PCLM; 
-      typedef std::vector<PCLM> JGen;
-      
-      JGen merge(const JGen& g0,const JGen& g1) {
-          JGen z;
-          for(int i=0;i<g0.size();i++) z.push_back(merge_columns(g0[i],g1[i]));
-          return z; 
-      }
+    public:
+          int get_fitness(const T& f) {
+              return m_logic->get_fitness(f);
+          }
+          
+          JGen make_crossover(const JGen& g0,const JGen& g1) {
+              return merge(g0,g1);
+          }
 
-      PCLM merge_columns(const PCLM& f, const PCLM& s) {
-          PCLM z;
-          std::cout << f.size() << std::endl;
-          for(int i=0;i<f.size()/2;i++) z.push_back(f[i]);
-          for(int i=0;i<s.size();i++) 
-          if ( std::find(z.begin(),z.end(),s[i]) == z.end() ) 
-          z.push_back(s[i]);
-          return z;
-      }
-      
-public:
-      JManager* m_logic;
+          JGen make_mutation(JGen& g) {
+             return m_logic->add_change(g);
+          }
+          
+          void post_process() {
+            m_logic->set_winner(JGeneticAlgoDefaultImpl<T>::get_winner());
+          }
+          
+          void create_first_generation() {            
+            for(int i=0;i<JGeneticAlgoDefaultImpl<T>::get_population_size();i++) 
+              JGeneticAlgoDefaultImpl<T>::add_gen(m_logic->get_new_state()); 
+          }
+
+    private:
+          JGen merge(const JGen& g0,const JGen& g1) {
+              JGen z;
+              for(int i=0;i<g0.size();i++) z.push_back(merge_columns(g0[i],g1[i]));
+              
+              return z; 
+          }
+
+          PCLM merge_columns(const PCLM& f, const PCLM& s) {
+              PCLM z;
+              //std::cout << f.size() << std::endl;
+              for(int i=0;i<f.size()/2;i++) z.push_back(f[i]);
+                for(int i=0;i<s.size();i++) 
+                  if ( std::find(z.begin(),z.end(),s[i]) == z.end() ) 
+                    z.push_back(s[i]);
+              return z;
+          }
+          
+    public:
+          JManager* m_logic;
 };
 
 

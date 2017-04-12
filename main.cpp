@@ -13,7 +13,7 @@
 int main( int argc, char* args[] )
 {
 
-	JRenderer renderer("Simulated annealing placement test");
+	JRenderer renderer("Genetic Algorithm Test");
         SDL_Event e;
         JManager* j = new JManager(&renderer);
 

@@ -21,22 +21,41 @@
             return calc_intersections();
         }
         
+        std::vector<std::vector<JInstance*> > JManager::add_change(std::vector<std::vector<JInstance*> > m) {
+            m_layers = m;
+            add_change();
+            return m_layers;
+        }
         
+        std::vector<std::vector<JInstance*> > JManager::get_new_state() {
+            add_change();
+            return m_layers;
+            //return calc_intersections();
+        }
         
         
         void JManager::action() {
 	    
+            /**/SDL_RenderClear( m_renderer->get() );
+            SDL_SetRenderDrawColor( m_renderer->get(), 0, 0, 0, 255);
+            //SDL_RenderClear( m_renderer->get() );
+            SDL_RenderPresent( m_renderer->get() );
+            /**/
+            
             typedef std::vector<std::vector<JInstance*> > Z;
             JGeneticAlgoImpl<Z>* impl = new JGeneticAlgoMyImpl<Z>(this);
             JGeneticAlgo<Z> j(impl);
             
-            for(int i=0;i<10;i++) {
+            /*
+            for(int i=0;i<100;i++) {
                 add_change();
+                //draw();
                 impl->add_gen(m_layers);
             }
+            */
             
             j.run();
-            
+            draw();
             
             /*
             calc_intersections();
@@ -69,14 +88,21 @@
 	    j.simulate();
 	    */
 	    
-	    calc_intersections();
-	    draw();
-	    std::cout << "BEGIN: " << m_start_res << " CURRENT: " << m_last_res << std::endl;
+	    //calc_intersections();
+	    //draw();
+	    //std::cout << "BEGIN: " << m_start_res << " CURRENT: " << m_last_res << std::endl;
 	    //m_start_res = m_last_res;
 	    //<< " BEST: " << m_last_fitness << std::endl;
             /**/
         }
 
+        void JManager::set_winner(const std::vector<std::vector<JInstance*> >& m) {
+            m_layers = m;
+            calc_intersections();
+            draw();
+            std::cout << "BEGIN: " << m_start_res << " CURRENT: " << m_last_res << std::endl;
+          
+        }
 
 	void JManager::revert() {
 	      undo_permute();
@@ -133,7 +159,7 @@
           int r = 0;
           for(unsigned int i=0; i<m_layers_cnt-1; i++ ) r = r + calc_intersection(i);
           
-          std::cout << "FI: " << r << std::endl;
+          //std::cout << "FI: " << r << std::endl;
           //std::cout << "************************\n\n" << std::endl;
           m_last_res = r;
           return r;
