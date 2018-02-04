@@ -37,6 +37,7 @@ class JGeneticAlgo {
               //std::cout << "initial fintess" << std::endl;
               m_impl->calc_fitnesses();
               
+			  /*
               int gen_num=0;
               while ( ! m_impl->is_done(gen_num) ) {
                   //std::cout << "generation " << gen_num << std::endl;
@@ -45,6 +46,8 @@ class JGeneticAlgo {
                   m_impl->calc_fitnesses();
                   gen_num++;
               }
+			  */
+			  
               m_impl->post_process();
           }
         
@@ -91,8 +94,8 @@ public:
       
       void make_new_generation() {
           make_selection_dflt();
-          make_crossover_dflt();
-          make_mutation_dflt();
+          //make_crossover_dflt();
+          //make_mutation_dflt();
       }
 
 

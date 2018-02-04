@@ -8,6 +8,8 @@
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
+#include <ctime>
+
 #include <iostream>
 #include <algorithm>
 #include <sstream>
@@ -32,7 +34,7 @@ class JManager {
 		    int m_v;
 	   };
     
-	JManager(JRenderer* r):m_renderer(r),m_layers_cnt(13),m_max_per_clm(10),m_conn_density(1),m_last_res(0) {
+	JManager(JRenderer* r):m_renderer(r),m_layers_cnt(3),m_max_per_clm(5),m_conn_density(1),m_last_res(0) {
 	  
 	  m_layers.resize(m_layers_cnt);
 	  srand(time(0));
@@ -130,7 +132,9 @@ class JGeneticAlgoMyImpl: public JGeneticAlgoDefaultImpl<T>
 
           PCLM merge_columns(const PCLM& f, const PCLM& s) {
               PCLM z;
-              //std::cout << f.size() << std::endl;
+			  //if (f.size()
+              std::cout << f.size() << std::endl;
+		      
               for(int i=0;i<f.size()/2;i++) z.push_back(f[i]);
                 for(int i=0;i<s.size();i++) 
                   if ( std::find(z.begin(),z.end(),s[i]) == z.end() ) 

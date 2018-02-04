@@ -3,9 +3,16 @@
 
 #include "instance.h"
 
+
 #include <SDL.h>
+
+#ifdef IMAGE_RENDER
 #include <SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#endif
+
+#ifdef TEXT_RENDER
+#include <SDL_ttf.h>
+#endif
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
@@ -23,7 +30,10 @@ public:
 
 public:  
 
+#ifdef TEXT_RENDER
 TTF_Font* gTTF_font;
+#endif
+
 SDL_Window* gWindow;
 SDL_Renderer* gRenderer;
 
@@ -34,6 +44,8 @@ bool init(const std::string& title)
 	
 	 	
      //*
+	#ifdef TEXT_RENDER
+
      if(!TTF_WasInit() && TTF_Init()==-1) {
 	  printf("TTF_Init: %s\n", TTF_GetError());
 	  exit(1);
@@ -44,6 +56,7 @@ bool init(const std::string& title)
         printf("TTF_OpenFont: %s\n", TTF_GetError());
         //exit(1);
       }
+	  #endif
 
       //Initialize SDL
         if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
@@ -81,12 +94,14 @@ bool init(const std::string& title)
                                 SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
                                 //Initialize PNG loading
-                                int imgFlags = IMG_INIT_PNG;
+                                #ifdef IMAGE_RENDER
+								int imgFlags = IMG_INIT_PNG;
                                 if( !( IMG_Init( imgFlags ) & imgFlags ) )
                                 {
                                         printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
                                         success = false;
                                 }
+								#endif
                         }
                 }
         }
@@ -103,15 +118,17 @@ void close()
         SDL_DestroyWindow( gWindow );
         gWindow = NULL;
         gRenderer = NULL;
+        SDL_Quit();
 
         //Quit SDL subsystems
+		#ifdef IMAGE_RENDER
         IMG_Quit();
-        SDL_Quit();
+		#endif
 }
 
 
   void draw_permute_two_instances(JInstance* f, JInstance* s) {
-               SDL_Point ns1 = s->get_center();
+             /*  SDL_Point ns1 = s->get_center();
                SDL_Point nf1 = f->get_center();
                SDL_Point tmp2 = s->get_center();
                
@@ -133,29 +150,44 @@ void close()
               }
               /**/
               
-              s->set_center(nf1);
-              f->set_center(ns1);
+			  SDL_Point tmp = s->get_center();
+              s->set_center(f->get_center());
+              f->set_center(tmp);
               //draw();
         }
 
 	void draw_text(std::string s, const SDL_Point& p )
 	{
-	      SDL_Color c = {0, 0, 0};  
+		#ifdef TEXT_RENDER
+		SDL_Color c = {0, 0, 0};  
 	      SDL_Surface* surfaceMessage = TTF_RenderText_Solid(gTTF_font, s.c_str(), c); 
 	      SDL_Texture* Message = SDL_CreateTextureFromSurface(gRenderer, surfaceMessage); 
 
 	      SDL_Rect Message_rect; 
 	      Message_rect.x = p.x;  
 	      Message_rect.y = p.y; 
-	      Message_rect.w = 25; 
-	      Message_rect.h = 25; 
+	      Message_rect.w = 20; 
+	      Message_rect.h = 20; 
 
 	      SDL_RenderCopy(gRenderer, Message, NULL, &Message_rect); 
+		#endif
+	}
+	
+
+
+
+	void draw_circle(unsigned int x, unsigned int y, unsigned r, SDL_Color c)//, SDL_Color color)
+	{
+		SDL_Point p;
+		//p.x = x;
+		//p.y = y;
+		
+		p.x = 50*x+10; p.y = 50*y+10;
+		
+		draw_circle_generic(p,r,c);
 	}
 
-
-
-	void draw_circle(const SDL_Point& center, int radius, SDL_Color c)//, SDL_Color color)
+	void draw_circle_generic(const SDL_Point& center, int radius, SDL_Color c)//, SDL_Color color)
 	{
 	    //std::cout << "circle " << center.x << " " << center.y << std::endl;
 	    SDL_SetRenderDrawColor(gRenderer , c.r,c.g,c.b,c.a);
@@ -173,6 +205,9 @@ void close()
 	    }
 	    SDL_SetRenderDrawColor(gRenderer , 255,0,0,255 );
 	}
-};
+
+	
+	
+	};
 	
 #endif

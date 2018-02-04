@@ -56,6 +56,9 @@
             
             j.run();
             draw();
+			calc_intersections();
+            draw();
+			
             
             /*
             calc_intersections();
@@ -240,7 +243,7 @@
         
         
         void JManager::do_and_draw() {
-        
+			draw();
 	  
 	}
         
@@ -263,24 +266,28 @@
 	      // m_layers[ln][s] = m_layers[ln][f];
               //m_layers[ln][s] = tmp;
 	      
-	      if ( !m_permuted.empty() ) m_permuted.erase(m_permuted.begin(),m_permuted.begin()+m_permuted.size());
-               if ( !m_fixme_permuted.empty() ) m_fixme_permuted.erase(m_fixme_permuted.begin(),m_fixme_permuted.begin()+m_fixme_permuted.size());
+	      //if ( !m_permuted.empty() ) m_permuted.erase(m_permuted.begin(),m_permuted.begin()+m_permuted.size());
+               //if ( !m_fixme_permuted.empty() ) m_fixme_permuted.erase(m_fixme_permuted.begin(),m_fixme_permuted.begin()+m_fixme_permuted.size());
 	      
+			/*
               std::pair<JInstance*,JInstance*> k;
               if ( m_layers[ln][f]->get_center().y > m_layers[ln][s]->get_center().y )
-                k = std::make_pair<JInstance*,JInstance*>(m_layers[ln][f],m_layers[ln][s]);
+                k = std::make_pair(m_layers[ln][f],m_layers[ln][s]);
               else
-                k = std::make_pair<JInstance*,JInstance*>(m_layers[ln][s],m_layers[ln][f]);
+                k = std::make_pair(m_layers[ln][s],m_layers[ln][f]);
                 
               std::pair<int,int> q1(s,f);
               std::pair<std::pair<int,int>,int> q2(q1,ln);
               
               m_permuted.push_back(k);
               m_fixme_permuted.push_back(q2);
-              
+              */
+			  
               //FIXME mess and add delete
-              m_renderer->draw_permute_two_instances(k.first,k.second);
-              std::swap(m_layers[ln][f],m_layers[ln][s]);
+			  std::swap(m_layers[ln][f],m_layers[ln][s]);
+              m_renderer->draw_permute_two_instances(m_layers[ln][f],m_layers[ln][s]);
+			  
+              
 	      
 	      return true;
 	}
@@ -357,17 +364,28 @@
 	    //* 
 	    for(unsigned i=0; i<m_layers_cnt; i++)
 	      for (unsigned int j=0; j<m_layers[i].size(); j++ ) {
-		m_renderer->draw_circle(m_layers[i][j]->get_center(),5,m_layers[i][j]->get_color());  
+			m_renderer->draw_circle_generic(m_layers[i][j]->get_center(),5,m_layers[i][j]->get_color());  
+			//m_renderer->draw_circle(i,j,5,m_layers[i][j]->get_color());  
+			
 		//std::cout << "ayqezban" << std::endl;
 		//draw_text(m_layers[i][j]->get_name(),m_layers[i][j]->get_center());
 	      }
 	      
 	      std::multimap<JInstance*,JInstance*>::iterator i;
 	      for(i=m_connections.begin();i!=m_connections.end();++i)
-		SDL_RenderDrawLine(m_renderer->get(),(*i).first->get_center().x,(*i).first->get_center().y,
+			SDL_RenderDrawLine(m_renderer->get(),(*i).first->get_center().x,(*i).first->get_center().y,
 					      (*i).second->get_center().x,(*i).second->get_center().y);
+			  
+			//SDL_RenderDrawLine(m_renderer->get(),(*i).first->get_center().x,(*i).first->get_center().y,
+					      //(*i).second->get_center().x,(*i).second->get_center().y);
 	      /**/
 	      SDL_RenderPresent( m_renderer->get() );
 	}
 
 
+
+	
+	
+	
+	
+	
