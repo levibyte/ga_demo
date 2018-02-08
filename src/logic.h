@@ -34,8 +34,13 @@ class JManager {
 		    int m_v;
 	   };
     
-	JManager(JRenderer* r):m_renderer(r),m_layers_cnt(3),m_max_per_clm(5),m_conn_density(1),m_last_res(0) {
+	JManager(JRenderer* r):m_renderer(r),m_layers_cnt(5),m_max_per_clm(5),m_conn_density(1),m_last_res(0) {
 	  
+                    m_offsset1=50;
+          m_offsset2=10;
+          m_radius=5;
+
+          
 	  m_layers.resize(m_layers_cnt);
 	  srand(time(0));
 	  init_data();
@@ -59,7 +64,8 @@ class JManager {
         std::vector<std::vector<JInstance*> > get_new_state();
         
         std::pair<int,int> get_id_by_inst(JInstance* inst);
-        std::vector<int> get_real_vect(const std::vector<JInstance*>& iv);
+        //std::vector<int> get_real_vect(const std::vector<JInstance*>& iv);
+        std::multiset<int> get_real_vect(const std::vector<JInstance*>& iv, bool dbg);
         void print_dbg();
         int calc_intersections();
         int calc_intersection(int i);
@@ -87,6 +93,13 @@ class JManager {
 	int m_last_res;
 
 	JRenderer* m_renderer;
+        
+        
+               
+        int m_offsset1;
+        int m_offsset2;
+        int m_radius;
+        
 };
 
 template<typename T>
@@ -133,7 +146,7 @@ class JGeneticAlgoMyImpl: public JGeneticAlgoDefaultImpl<T>
           PCLM merge_columns(const PCLM& f, const PCLM& s) {
               PCLM z;
 			  //if (f.size()
-              std::cout << f.size() << std::endl;
+              //std::cout << f.size() << std::endl;
 		      
               for(int i=0;i<f.size()/2;i++) z.push_back(f[i]);
                 for(int i=0;i<s.size();i++) 

@@ -33,20 +33,21 @@ class JGeneticAlgo {
         JGeneticAlgo(JGeneticAlgoImpl<T>* i):m_impl(i) {}
         
         void run() {
+              std::cout << "creating initial generation" << std::endl;
               m_impl->create_first_generation();
-              //std::cout << "initial fintess" << std::endl;
+              std::cout << "calc fitness..." << std::endl;
               m_impl->calc_fitnesses();
               
-			  /*
+            //*
               int gen_num=0;
               while ( ! m_impl->is_done(gen_num) ) {
-                  //std::cout << "generation " << gen_num << std::endl;
+                  std::cout << "new generation " << gen_num << std::endl;
                   m_impl->make_new_generation();
-                  //std::cout << "calc fitenss... " << std::endl;
+                  std::cout << "calc fitenss... " << std::endl;
                   m_impl->calc_fitnesses();
                   gen_num++;
               }
-			  */
+		/**/
 			  
               m_impl->post_process();
           }
@@ -61,9 +62,12 @@ template<typename T>
 class JGeneticAlgoDefaultImpl: public JGeneticAlgoImpl<T> {
 
 public:
-      JGeneticAlgoDefaultImpl():m_max_generations(1000),m_perfect_fitness(0),m_current_fitness(9999999) {
+      JGeneticAlgoDefaultImpl():m_max_generations(1),m_perfect_fitness(0),m_current_fitness(9999999) {
+          
           m_population_size = 30;
-          m_elit_survivors_num = m_population_size/3;
+          //m_population.resize(m_population_size);
+          
+          m_elit_survivors_num = m_population_size/10;
       }
       
 public:
@@ -71,16 +75,21 @@ public:
       void add_gen(const T& m) {
           //assert(0);
           //fixme assert not to overdo.
+          std::cout << "---Add new gen" << std::endl;
           m_population.push_back(m);
       }
       
       void calc_fitnesses() {
+        std::cout << "POPULATION" << m_population.size() << std::endl;
         for(int i=0; i<m_population.size(); i++ ) {
           int tmp = get_fitness(m_population[i]);
-         // m_gen2fitness[&m_population[i]] = tmp;
+          m_gen2fitness[&m_population[i]] = tmp;
           m_fitness2gen[tmp]=&m_population[i];
           //fixme need comparator
-          if ( tmp < m_current_fitness ) m_current_fitness = tmp;
+          if ( tmp < m_current_fitness ) { 
+            m_current_fitness = tmp;
+            std::cout << "         Found fitness:" << m_current_fitness << std::endl;
+          }
         }
       }
 
@@ -93,16 +102,22 @@ public:
       }
       
       void make_new_generation() {
+          std::cout << "  Processing selection..." << std::endl;
           make_selection_dflt();
+          
+          //std::cout << "  Processing crossover..." << std::endl;
           //make_crossover_dflt();
-          //make_mutation_dflt();
+          
+          std::cout << "  Processing mutation..." << std::endl;
+          make_mutation_dflt();
       }
 
 
       void delete_generation() {
-          m_population.clear();
-          m_fitness2gen.clear();
-          //m_gen2fitness.clear();
+            std::cout << "            ! deleting all generation" << std::endl;
+            m_population.clear();
+            m_fitness2gen.clear();
+             m_gen2fitness.clear();
       }
 
 ///////
@@ -112,11 +127,24 @@ public:
           typename std::vector<T>::iterator it2;
           //assert(m_fitness2gen)
           std::vector<T> tmp;  
-          for( int i=0; i<m_elit_survivors_num && it!=m_fitness2gen.end() ; i++, it++) tmp.push_back(*it->second);
+          for( int i=0; i<m_elit_survivors_num && it!=m_fitness2gen.end() ; i++, it++) {
+            std::cout << "            !elit no: " << i << ", Fitness = " << (*it).first<< std::endl;
+            tmp.push_back(*it->second);
+          }
          
           delete_generation();
           
-          for( int i=0; i<m_elit_survivors_num; i++) m_population.push_back(tmp[i]);
+          std::cout << "            !adding remainging " << tmp.size() << " " << m_population.size() << std::endl;
+          //m_population.resize(m_elit_survivors_num);
+          
+          
+          for( int i=0; i<m_elit_survivors_num; i++) {
+            std::cout << "g" << i << std::endl;
+            m_population.push_back(tmp[i]);
+            
+          }
+          
+          std::cout << "END" << std::endl;
           //return tmp;
           //std::erase(m_population.begin(),m_population.begin())
       }
@@ -136,7 +164,8 @@ public:
               if ( tmp.size() > m_population.size() ) break;
             }
            
-            //std::cout << tmp.size() << std::endl;
+            ///m_population.resize(m_popu) 
+            //td::cout << tmp.size() << std::endl;
             //assert(0);
             for( int i=0; i<tmp.size(); i++) m_population.push_back(tmp[i]);
             //std::cout << m_population.size() << std::endl;
@@ -146,9 +175,20 @@ public:
       
       
       void make_mutation_dflt() {
-           for( int i=m_elit_survivors_num; i<m_population_size-m_elit_survivors_num-1; i++) 
+          int diff =  m_population_size-m_elit_survivors_num-1;
+          std::cout << "DIFF " << diff << std::endl;
+          std::cout << "SIZE " << m_population.size()<< std::endl;
+         
+          //assert(0);
+          for( int i=m_elit_survivors_num; i<diff + m_elit_survivors_num + 1; i++) {
+            //std::cout << i << " NUMBERRRRRRR m_population[" << i-1 << "]" << std::endl;
               m_population.push_back(make_mutation(m_population[i-1]));
             //make_mutation(*m_fitness2gen.begin()->second);
+          }
+          
+          std::cout << "AFTER SIZE " << m_population.size()<< std::endl;
+          assert(m_population.size() == m_population_size );
+            
       }
       
       
@@ -178,6 +218,8 @@ public:
 
   
       T get_winner() {
+          std::cout << "----------" << m_fitness2gen.size() << std::endl;
+        std::cout << m_fitness2gen.begin()->first << std::endl;
           return *m_fitness2gen.begin()->second;
         
       }
@@ -188,7 +230,7 @@ public:
 
 private:
       std::vector<T> m_population;
-      //std::map<T*,int> m_gen2fitness;
+      std::map<T*,int> m_gen2fitness;
       std::map<int,T*> m_fitness2gen;
    
       int m_max_generations;

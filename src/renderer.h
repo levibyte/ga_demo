@@ -1,6 +1,7 @@
 #ifndef renderer_h
 #define renderer_h
 
+#include <stdio.h>
 #include "instance.h"
 
 
@@ -51,7 +52,7 @@ bool init(const std::string& title)
 	  exit(1);
       }
       
-      gTTF_font = TTF_OpenFont("FreeSans.ttf", 10); 
+      gTTF_font = TTF_OpenFont("./FreeSans.ttf", 10); 
       if(!gTTF_font) {  
         printf("TTF_OpenFont: %s\n", TTF_GetError());
         //exit(1);
@@ -150,9 +151,8 @@ void close()
               }
               /**/
               
-			  SDL_Point tmp = s->get_center();
-              s->set_center(f->get_center());
-              f->set_center(tmp);
+              //s->set_center(nf1);
+              //f->set_center(ns1);
               //draw();
         }
 
@@ -166,8 +166,8 @@ void close()
 	      SDL_Rect Message_rect; 
 	      Message_rect.x = p.x;  
 	      Message_rect.y = p.y; 
-	      Message_rect.w = 20; 
-	      Message_rect.h = 20; 
+	      Message_rect.w = 30; 
+	      Message_rect.h = 30; 
 
 	      SDL_RenderCopy(gRenderer, Message, NULL, &Message_rect); 
 		#endif
@@ -176,18 +176,7 @@ void close()
 
 
 
-	void draw_circle(unsigned int x, unsigned int y, unsigned r, SDL_Color c)//, SDL_Color color)
-	{
-		SDL_Point p;
-		//p.x = x;
-		//p.y = y;
-		
-		p.x = 50*x+10; p.y = 50*y+10;
-		
-		draw_circle_generic(p,r,c);
-	}
-
-	void draw_circle_generic(const SDL_Point& center, int radius, SDL_Color c)//, SDL_Color color)
+	void draw_circle(const SDL_Point& center, int radius, SDL_Color c)//, SDL_Color color)
 	{
 	    //std::cout << "circle " << center.x << " " << center.y << std::endl;
 	    SDL_SetRenderDrawColor(gRenderer , c.r,c.g,c.b,c.a);
@@ -205,9 +194,6 @@ void close()
 	    }
 	    SDL_SetRenderDrawColor(gRenderer , 255,0,0,255 );
 	}
-
-	
-	
-	};
+};
 	
 #endif
