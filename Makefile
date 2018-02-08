@@ -1,5 +1,6 @@
-OUT=GeneticAlgo.bin
-FLAGS=-DTEXT_RENDER
+PRGNAME=GeneticAlgoDemo
+OUT=$(PRGNAME).bin
+#FLAGS=-DTEXT_RENDER
 #FLAGS=-DIMAGE_RENDER
 
 SRCS=src/main.cpp src/logic.cpp
@@ -15,13 +16,14 @@ SRCS=src/main.cpp src/logic.cpp
 #LIBS=./deps/win/SDL2/lib/win32/SDL2.lib 
 #LIBS=./deps/win/SDL2/lib/win32/SDL2.lib 
 #INCLS=-I ./deps/win/SDL2/include
-LIBS=~/levi/downloads/SDL2_ttf-2.0.14/lib/libSDL2_ttf.a ~/levi/downloads/SDL2-2.0.5/build/.libs/libSDL2.a -lfreetype -ldl -lrt
+LIBS=./deps/linux/SDL2/libSDL2.a -lfreetype -ldl -lrt
+#LIBS=~/levi/downloads/SDL2_ttf-2.0.14/lib/libSDL2_ttf.a ~/levi/downloads/SDL2-2.0.5/build/.libs/libSDL2.a -lfreetype -ldl -lrt
 #LIBS=-L ~/levi/downloads/SDL2-2.0.5/build/.libs -lSDL2 -lfreetype -ldl -lrt
 
 ifeq ($(OS),Windows_NT)
-	OUT=GeneticAlgo.exe
+	OUT=$(PRGNAME).exe
 	#-enable-stdcall-fixup
-	FLAGS=  -static-libstdc++ -DOS_WINDOWS -lmingw32 -static-libgcc 
+	FLAGS=-static-libstdc++ -DOS_WINDOWS -lmingw32 -static-libgcc 
 	#LIBS=-L ./deps/win/SDL2/lib/win32 -lSDL2 ./deps/win/SDL2/lib/win32/SDL2.lib 
 	LIBS=./deps/win/SDL2/lib/win32/SDL2.lib 
 	#LIBS=./deps/win/SDL2/lib/win32/SDL2.lib 
@@ -32,8 +34,6 @@ endif
 
 
 default:
-	#cd ./src
 	clear
 	rm -f ./bin/$(OUT) 
-	#g++  -DOS_WINDOWS $(SRCS) -o ./bin/$(OUT) -I ./deps/win/SDL2/include -L ./deps/win/SDL2/lib/win32  -lmingw32 -lSDl2 -static-libgcc -static-libstdc++
 	g++ -Wfatal-errors -g $(SRCS) $(FLAGS) $(INCLS) $(LIBS) -o ./bin/$(OUT)

@@ -42,8 +42,10 @@
             SDL_RenderPresent( m_renderer->get() );
             /**/
             
+	    int c = calc_intersections();
+	    //int c=99;
             typedef std::vector<std::vector<JInstance*> > Z;
-            JGeneticAlgoImpl<Z>* impl = new JGeneticAlgoMyImpl<Z>(this);
+            JGeneticAlgoImpl<Z>* impl = new JGeneticAlgoMyImpl<Z>(c,this);
             JGeneticAlgo<Z> j(impl);
             
             /*
@@ -56,8 +58,8 @@
             
             j.run();
         
-            calc_intersections();
-            draw();
+            //calc_intersections();
+            //draw();
 			
             
             /*
@@ -100,7 +102,8 @@
         }
 
         void JManager::set_winner(const std::vector<std::vector<JInstance*> >& m) {
-            m_layers = m;
+	    std::cout << "hopar" << std::endl;
+	    m_layers = m;
             calc_intersections();
             draw();
             std::cout << "BEGIN: " << m_start_res << " CURRENT: " << m_last_res << std::endl;
@@ -197,7 +200,8 @@
         }
         
         void JManager::add_change() {
-              while ( ! permute_two_rand_instances_in_layer(rand()%m_layers_cnt) );
+            //std::cout << m_layers_cnt << std::endl; 
+	    while ( ! permute_two_rand_instances_in_layer(rand()%m_layers_cnt) );
         }
         
         //FIXME this part need to be rewrited

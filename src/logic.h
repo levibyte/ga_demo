@@ -34,7 +34,7 @@ class JManager {
 		    int m_v;
 	   };
     
-	JManager(JRenderer* r):m_renderer(r),m_layers_cnt(5),m_max_per_clm(5),m_conn_density(1),m_last_res(0) {
+	JManager(JRenderer* r):m_renderer(r),m_layers_cnt(9),m_max_per_clm(9),m_conn_density(1),m_last_res(0) {
 	  
                     m_offsset1=50;
           m_offsset2=10;
@@ -110,7 +110,10 @@ class JGeneticAlgoMyImpl: public JGeneticAlgoDefaultImpl<T>
     typedef std::vector<PCLM> JGen;
 
     public:
-          JGeneticAlgoMyImpl(JManager* m_logic):m_logic(m_logic) {}
+          JGeneticAlgoMyImpl(int initial_fitness,JManager* logic):JGeneticAlgoDefaultImpl<T>(initial_fitness)
+          {
+	    m_logic = logic; 
+	  }
 
 
     public:
@@ -131,7 +134,8 @@ class JGeneticAlgoMyImpl: public JGeneticAlgoDefaultImpl<T>
           }
           
           void create_first_generation() {            
-            for(int i=0;i<JGeneticAlgoDefaultImpl<T>::get_population_size();i++) 
+            //assert(0);
+	    for(int i=0;i<JGeneticAlgoDefaultImpl<T>::get_population_size();i++) 
               JGeneticAlgoDefaultImpl<T>::add_gen(m_logic->get_new_state()); 
           }
 

@@ -12,7 +12,11 @@
 template<typename T>    
 class JGeneticAlgoImpl {
   public:
-        virtual void make_new_generation()=0;
+        JGeneticAlgoImpl(int initial_fitness){
+	  
+	}
+	
+	virtual void make_new_generation()=0;
         virtual void calc_fitnesses()=0;
         virtual void create_first_generation()=0;
         virtual bool is_done(int)=0;
@@ -33,17 +37,23 @@ class JGeneticAlgo {
         JGeneticAlgo(JGeneticAlgoImpl<T>* i):m_impl(i) {}
         
         void run() {
-              std::cout << "creating initial generation" << std::endl;
+              //std::cout << 
+	      //std::cout << "creating initial generation" << std::endl;
+	      //std::cout << m_impl << std::endl;
               m_impl->create_first_generation();
-              std::cout << "calc fitness..." << std::endl;
+              //std::cout << "calc fitness..." << std::endl;
               m_impl->calc_fitnesses();
-              
+              //std::cout << std::endl;
+	      //std::cout << std::endl;
             //*
               int gen_num=0;
               while ( ! m_impl->is_done(gen_num) ) {
-                  std::cout << "new generation " << gen_num << std::endl;
+                  std::cout << std::endl;
+		  std::cout << "new generation " << gen_num << std::endl;
                   m_impl->make_new_generation();
-                  std::cout << "calc fitenss... " << std::endl;
+                  
+		  std::cout << std::endl;
+		  std::cout << "calc fitenss... " << std::endl;
                   m_impl->calc_fitnesses();
                   gen_num++;
               }
@@ -62,12 +72,13 @@ template<typename T>
 class JGeneticAlgoDefaultImpl: public JGeneticAlgoImpl<T> {
 
 public:
-      JGeneticAlgoDefaultImpl():m_max_generations(1),m_perfect_fitness(0),m_current_fitness(9999999) {
+      JGeneticAlgoDefaultImpl(int initial_fitness):JGeneticAlgoImpl<T>(initial_fitness),m_max_generations(1000),m_perfect_fitness(0),m_current_fitness(initial_fitness) {
           
-          m_population_size = 30;
+          m_population_size = 100;
           //m_population.resize(m_population_size);
           
           m_elit_survivors_num = m_population_size/10;
+	  //std::cout << m_current_fitness << std::endl;
       }
       
 public:
@@ -75,12 +86,13 @@ public:
       void add_gen(const T& m) {
           //assert(0);
           //fixme assert not to overdo.
-          std::cout << "---Add new gen" << std::endl;
+          //std::cout << "---Add new gen" << std::endl;
           m_population.push_back(m);
       }
       
       void calc_fitnesses() {
-        std::cout << "POPULATION" << m_population.size() << std::endl;
+	std::cout << "*********************************************MIN FITNESS" << m_current_fitness << std::endl;
+        std::cout << "CALC FITNES FOR POPULATION SIZE  " << m_population.size() << std::endl;
         for(int i=0; i<m_population.size(); i++ ) {
           int tmp = get_fitness(m_population[i]);
           m_gen2fitness[&m_population[i]] = tmp;
@@ -88,9 +100,12 @@ public:
           //fixme need comparator
           if ( tmp < m_current_fitness ) { 
             m_current_fitness = tmp;
-            std::cout << "         Found fitness:" << m_current_fitness << std::endl;
+            m_winner = m_population[i];
+	    std::cout << "         Found fitness:" << m_current_fitness << std::endl;
           }
         }
+	std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MIN FITNESS" << m_current_fitness << std::endl;
+	
       }
 
       bool is_done(int i) {
@@ -105,8 +120,8 @@ public:
           std::cout << "  Processing selection..." << std::endl;
           make_selection_dflt();
           
-          //std::cout << "  Processing crossover..." << std::endl;
-          //make_crossover_dflt();
+          std::cout << "  Processing crossover..." << std::endl;
+          make_crossover_dflt();
           
           std::cout << "  Processing mutation..." << std::endl;
           make_mutation_dflt();
@@ -117,7 +132,7 @@ public:
             std::cout << "            ! deleting all generation" << std::endl;
             m_population.clear();
             m_fitness2gen.clear();
-             m_gen2fitness.clear();
+            m_gen2fitness.clear();
       }
 
 ///////
@@ -139,12 +154,12 @@ public:
           
           
           for( int i=0; i<m_elit_survivors_num; i++) {
-            std::cout << "g" << i << std::endl;
+            //std::cout << "g" << i << std::endl;
             m_population.push_back(tmp[i]);
             
           }
           
-          std::cout << "END" << std::endl;
+          std::cout << "ENDOFTHE DAY: " << m_population.size() << std::endl;
           //return tmp;
           //std::erase(m_population.begin(),m_population.begin())
       }
@@ -187,7 +202,7 @@ public:
           }
           
           std::cout << "AFTER SIZE " << m_population.size()<< std::endl;
-          assert(m_population.size() == m_population_size );
+          //assert(m_population.size() == m_population_size );
             
       }
       
@@ -213,14 +228,16 @@ public:
       
       
       void post_process() {
+	  assert(0);
         
       }
 
   
       T get_winner() {
-          std::cout << "----------" << m_fitness2gen.size() << std::endl;
-        std::cout << m_fitness2gen.begin()->first << std::endl;
-          return *m_fitness2gen.begin()->second;
+          return m_winner;
+	  //std::cout << "----------" << m_fitness2gen.size() << std::endl;
+	  //std::cout << m_fitness2gen.begin()->first << std::endl;
+          //return *m_fitness2gen.begin()->second;
         
       }
       
@@ -229,6 +246,8 @@ public:
       }
 
 private:
+      T m_winner;
+      
       std::vector<T> m_population;
       std::map<T*,int> m_gen2fitness;
       std::map<int,T*> m_fitness2gen;
