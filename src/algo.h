@@ -91,21 +91,27 @@ public:
       }
       
       void calc_fitnesses() {
-	std::cout << "*********************************************MIN FITNESS" << m_current_fitness << std::endl;
+		std::cout << "*********************************************MIN FITNESS" << m_current_fitness << std::endl;
         std::cout << "CALC FITNES FOR POPULATION SIZE  " << m_population.size() << std::endl;
-        for(int i=0; i<m_population.size(); i++ ) {
-          int tmp = get_fitness(m_population[i]);
+        int tmp;
+		for(int i=0; i<m_population.size(); i++ ) {
+          tmp = get_fitness(m_population[i]);
           m_gen2fitness[&m_population[i]] = tmp;
           m_fitness2gen[tmp]=&m_population[i];
           //fixme need comparator
           if ( tmp < m_current_fitness ) { 
             m_current_fitness = tmp;
-            m_winner = m_population[i];
-	    std::cout << "         Found fitness:" << m_current_fitness << std::endl;
+            //m_winner = m_population[i];
+			std::cout << "         Found fitness:" << m_current_fitness << std::endl;
+			std::cout << "         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Found fitness:" << get_fitness(m_winner) << std::endl;
+			//assert(0);
+		
           }
         }
-	std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MIN FITNESS" << m_current_fitness << std::endl;
-	
+		 m_winner = *m_fitness2gen[m_current_fitness];
+		std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MIN FITNESS" << m_current_fitness << std::endl;
+		//std::cout << "ELEN JANIK" <<  get_fitness(m_winner) << std::endl;
+		get_winner();
       }
 
       bool is_done(int i) {
@@ -131,7 +137,7 @@ public:
       void delete_generation() {
             std::cout << "            ! deleting all generation" << std::endl;
             m_population.clear();
-            m_fitness2gen.clear();
+            //m_fitness2gen.clear();
             m_gen2fitness.clear();
       }
 
@@ -234,6 +240,8 @@ public:
 
   
       T get_winner() {
+		std::cout << "CALLED WINNER: "  << get_fitness(m_winner) << std::endl;
+			//m_winner
           return m_winner;
 	  //std::cout << "----------" << m_fitness2gen.size() << std::endl;
 	  //std::cout << m_fitness2gen.begin()->first << std::endl;
