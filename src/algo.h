@@ -19,6 +19,7 @@ class JGeneticAlgoImpl {
 	virtual void make_new_generation()=0;
         virtual void calc_fitnesses()=0;
         virtual void create_first_generation()=0;
+		virtual void create_or_set_inital_state(const T&)=0;
         virtual bool is_done(int)=0;
         virtual void add_gen(const T&)=0;
         virtual int get_fitness(const T&)=0;
@@ -45,7 +46,7 @@ class JGeneticAlgo {
               m_impl->calc_fitnesses();
               //std::cout << std::endl;
 	      //std::cout << std::endl;
-            //*
+            /*
               int gen_num=0;
               while ( ! m_impl->is_done(gen_num) ) {
                   std::cout << std::endl;
@@ -57,12 +58,15 @@ class JGeneticAlgo {
                   m_impl->calc_fitnesses();
                   gen_num++;
               }
-		/**/
+		
 			  
               m_impl->post_process();
           }
-        
-     private:  
+		  
+        /**/
+		 m_impl->post_process();
+		}
+	 private:  
         JGeneticAlgoImpl<T>* m_impl;
 };
 
@@ -91,6 +95,7 @@ public:
       }
       
       void calc_fitnesses() {
+		/*
 		std::cout << "*********************************************MIN FITNESS" << m_current_fitness << std::endl;
         std::cout << "CALC FITNES FOR POPULATION SIZE  " << m_population.size() << std::endl;
         int tmp;
@@ -108,16 +113,27 @@ public:
 		
           }
         }
-		 m_winner = *m_fitness2gen[m_current_fitness];
+		 //m_winner = *m_fitness2gen[m_current_fitness];
+		//*/
 		std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MIN FITNESS" << m_current_fitness << std::endl;
 		//std::cout << "ELEN JANIK" <<  get_fitness(m_winner) << std::endl;
-		get_winner();
+		//get_winner();
       }
 
       bool is_done(int i) {
           return ( i > m_max_generations || m_current_fitness <= m_perfect_fitness );
       }
 
+	  
+		void create_or_set_inital_state(const T& t) {
+			
+			//int c_fitness = get_fitness(t);
+			
+			m_winner = t;
+			//std::cout << "mtam set" << std::endl;
+			
+		}
+	  
       void make_selection() {
           make_selection_dflt();
       }

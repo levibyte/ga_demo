@@ -42,6 +42,7 @@
             SDL_RenderPresent( m_renderer->get() );
             /**/
             
+			//m_layers = m_last_winner;
 	    int c = calc_intersections();
 	    //int c=99;
             typedef std::vector<std::vector<JInstance*> > Z;
@@ -106,10 +107,15 @@
 	    m_layers = m;
             calc_intersections();
             draw();
+			m_last_winner = m_layers;
             std::cout << "BEGIN: " << m_start_res << " CURRENT: " << m_last_res << std::endl;
           
         }
 
+		std::vector<std::vector<JInstance*> >  JManager::get_current_winner() {
+				return m_last_winner;
+		}
+		
 	void JManager::revert() {
 	      undo_permute();
 	      //return calc_intersections(); 

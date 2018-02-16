@@ -51,6 +51,7 @@ class JManager {
           //print_dbg();
 	  draw();
           std::cout << "BEGIN: " <<  m_start_res << std::endl;
+		  m_last_winner = m_layers; 
 	}
 
 	    
@@ -62,7 +63,7 @@ class JManager {
         void set_winner(const std::vector<std::vector<JInstance*> >& m);
         std::vector<std::vector<JInstance*> > add_change(std::vector<std::vector<JInstance*> > m);
         std::vector<std::vector<JInstance*> > get_new_state();
-        
+        std::vector<std::vector<JInstance*> > get_current_winner();
         std::pair<int,int> get_id_by_inst(JInstance* inst);
         //std::vector<int> get_real_vect(const std::vector<JInstance*>& iv);
         std::multiset<int> get_real_vect(const std::vector<JInstance*>& iv, bool dbg);
@@ -83,6 +84,7 @@ class JManager {
         std::vector< std::pair< std::pair<int,int>, int > > m_fixme_permuted;
         
         std::vector< std::vector<JInstance*> > m_layers;
+		std::vector<std::vector<JInstance*> > m_last_winner;
 	std::multimap<JInstance*,JInstance*> m_connections;
 	
 	int m_max_per_clm;
@@ -112,7 +114,7 @@ class JGeneticAlgoMyImpl: public JGeneticAlgoDefaultImpl<T>
     public:
           JGeneticAlgoMyImpl(int initial_fitness,JManager* logic):JGeneticAlgoDefaultImpl<T>(initial_fitness)
           {
-	    m_logic = logic; 
+			m_logic = logic; 
 	  }
 
 
@@ -135,7 +137,8 @@ class JGeneticAlgoMyImpl: public JGeneticAlgoDefaultImpl<T>
           
           void create_first_generation() {            
             //assert(0);
-	    for(int i=0;i<JGeneticAlgoDefaultImpl<T>::get_population_size();i++) 
+			JGeneticAlgoDefaultImpl<T>::create_or_set_inital_state(m_logic->get_current_winner());
+			for(int i=0;i<JGeneticAlgoDefaultImpl<T>::get_population_size();i++) 
               JGeneticAlgoDefaultImpl<T>::add_gen(m_logic->get_new_state()); 
           }
 
