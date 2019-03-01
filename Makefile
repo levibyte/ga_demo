@@ -1,39 +1,18 @@
-PRGNAME=GeneticAlgoDemo
-OUT=$(PRGNAME).bin
-#FLAGS=-DTEXT_RENDER
-#FLAGS=-DIMAGE_RENDER
+PROGNAME:=ga_algo
+SRCS_CORE:=$(wildcard src/core/*.cpp) 
+SRCS_RENDERER:=$(wildcard src/renderer/*.cpp) 
 
-SRCS=src/main.cpp src/logic.cpp
+SRCS:=$(SRCS_CORE) $(SRCS_RENDERER)
 
-# ifeq ($(USER),levons)
-# 	LIBS=-L ~/levi/downloads/SDL2-2.0.5/build/.libs -lSDL2 -lfreetype -ldl -lrt
-# 	INCLS=-I ~/levi/downloads/SDL2-2.0.5/include 
-# else
- 	#LIBS=./deps/linux/SDL2/libSDL2.a ./deps/linux/SDL2_ttf/libSDL2_ttf.a -lfreetype -ldl -lrt
- 	INCLS=-I ./deps/linux/SDL2/include -I ./deps/linux/SDL2_ttf
-# endif
+INCS:=
+FLAGS:=-Wno-narrowing -Wfatal-errors
 
-#LIBS=./deps/win/SDL2/lib/win32/SDL2.lib 
-#LIBS=./deps/win/SDL2/lib/win32/SDL2.lib 
-#INCLS=-I ./deps/win/SDL2/include
-LIBS=./deps/linux/SDL2/libSDL2.a -lfreetype -ldl -lrt
-#LIBS=~/levi/downloads/SDL2_ttf-2.0.14/lib/libSDL2_ttf.a ~/levi/downloads/SDL2-2.0.5/build/.libs/libSDL2.a -lfreetype -ldl -lrt
-#LIBS=-L ~/levi/downloads/SDL2-2.0.5/build/.libs -lSDL2 -lfreetype -ldl -lrt
-
-ifeq ($(OS),Windows_NT)
-	OUT=$(PRGNAME).exe
-	#-enable-stdcall-fixup
-	FLAGS=-static-libstdc++ -DOS_WINDOWS -lmingw32 -static-libgcc 
-	#LIBS=-L ./deps/win/SDL2/lib/win32 -lSDL2 ./deps/win/SDL2/lib/win32/SDL2.lib 
-	LIBS=./deps/win/SDL2/lib/win32/SDL2.lib 
-	#LIBS=./deps/win/SDL2/lib/win32/SDL2.lib 
-	INCLS=-I ./deps/win/SDL2/include
-	#cp ./deps/win/SDL2/lib/win32/SDL2.dll ./bin
-endif
-
-
+LIBS+=./deps/linux/SDL2/libSDL2.a -L ./deps/linux/SDL2_image-2.0.3 -lSDL2_image -L ./deps/linux/SDL2_ttf/libSDL2_ttf.so -lSDL2_ttf -ldl -lrt -pthread 
+INCLS+=$(INCS) -I ./deps/linux/SDL2/include -I ./deps/linux/SDL2_image-2.0.3/include -I ./deps/linux/SDL2_ttf/include
+OUT=$(PROGNAME).bin
 
 default:
 	clear
-	rm -f ./bin/$(OUT) 
-	g++ -Wfatal-errors -g $(SRCS) $(FLAGS) $(INCLS) $(LIBS) -o ./bin/$(OUT)
+	rm -f ./bin/$(OUT)  
+	mkdir -p ./bin
+	g++ -std=c++11 $(SRCS) $(FLAGS) $(INCLS) $(LIBS) -o ./bin/$(OUT)
